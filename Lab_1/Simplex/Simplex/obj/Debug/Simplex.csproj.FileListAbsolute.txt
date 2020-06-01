@@ -5,3 +5,10 @@ C:\Users\Khan\Desktop\Decision_Theory\Simplex\Simplex\bin\Debug\Simplex.exe
 C:\Users\Khan\Desktop\Decision_Theory\Simplex\Simplex\bin\Debug\Simplex.pdb
 C:\Users\Khan\Desktop\Decision_Theory\Simplex\Simplex\obj\Debug\Simplex.exe
 C:\Users\Khan\Desktop\Decision_Theory\Simplex\Simplex\obj\Debug\Simplex.pdb
+C:\Users\Khan\Desktop\Decision_Theory\Decision_Theory\Lab_1\Simplex\Simplex\bin\Debug\Simplex.exe.config
+C:\Users\Khan\Desktop\Decision_Theory\Decision_Theory\Lab_1\Simplex\Simplex\bin\Debug\Simplex.exe
+C:\Users\Khan\Desktop\Decision_Theory\Decision_Theory\Lab_1\Simplex\Simplex\bin\Debug\Simplex.pdb
+C:\Users\Khan\Desktop\Decision_Theory\Decision_Theory\Lab_1\Simplex\Simplex\obj\Debug\Simplex.csprojAssemblyReference.cache
+C:\Users\Khan\Desktop\Decision_Theory\Decision_Theory\Lab_1\Simplex\Simplex\obj\Debug\Simplex.csproj.CoreCompileInputs.cache
+C:\Users\Khan\Desktop\Decision_Theory\Decision_Theory\Lab_1\Simplex\Simplex\obj\Debug\Simplex.exe
+C:\Users\Khan\Desktop\Decision_Theory\Decision_Theory\Lab_1\Simplex\Simplex\obj\Debug\Simplex.pdb
