@@ -12,9 +12,9 @@ namespace Lab_2
     class Program
     {
         private static int n = 3;
-        private static double m = 0.25;
-        private static double b = 0.25;
-        private static double y = 0.25;
+        private static double m = 1;
+        private static double b = 2.8;
+        private static double y = 0.4;
         private static double E = 0.1;
         private static List<double[]> x = new List<double[]>();
         private static List<double> function = new List<double>();
@@ -38,6 +38,8 @@ namespace Lab_2
             //return 2 * Math.Pow(x[0], 4) + Math.Pow(x[1], 4) + Math.Pow(x[0], 2) * x[1] - 5 * x[0] * x[1] + 3 * Math.Pow(x[0], 2) + 8 * x[1];
 
             return 4 * Math.Pow(x[0], 2) + 4 * Math.Pow(x[1], 2) + Math.Pow(x[2], 2) - 2 * x[0] * x[2] - 5 * x[0] * x[1] - 8 * x[2];
+
+            //return Math.Pow(x[0], 2) - x[0] * x[1] + 3 * Math.Pow(x[1], 2) - x[0];
         }
 
         private static void FirstStep()
@@ -50,6 +52,7 @@ namespace Lab_2
             x[0][0] = 1;
             x[0][1] = 1;
             x[0][2] = 1;
+
         }
 
         static void Main(string[] args)
@@ -64,13 +67,31 @@ namespace Lab_2
                 function.Add(CalculateFunction(x[i]));
             }
 
-            minI = function.IndexOf(function.Min());
-            maxI = function.IndexOf(function.Max());
-            Fs = function[0];
+            
+            
 
+            int counter = 0;
 
             do
             {
+                minI = function.IndexOf(function.Min());
+                maxI = function.IndexOf(function.Max());
+
+                List<double> temp = new List<double>();
+
+                for (int i = 0; i < n + 1; i++)
+                {
+                    if (i == minI || i == maxI)
+                        continue;
+                    temp.Add(function[i]);
+                }
+
+                Fs = function[function.IndexOf(temp.Max())];
+
+
+
+
+                counter++;
                 if (Iteration())
                 {
                     break;
@@ -80,6 +101,7 @@ namespace Lab_2
 
             } while (true);
 
+            Console.WriteLine( counter );
             Console.ReadLine();
         }
 
@@ -124,7 +146,7 @@ namespace Lab_2
 
                 result[i] = (1.0 / xs.Count) * sum;
 
-
+                
             }
             return result;
         }
@@ -149,11 +171,11 @@ namespace Lab_2
             }
 
             sigm = Math.Sqrt((1.0 / (n + 1) * Math.Pow(sum, 2)));
-
+            Console.WriteLine(sigm);
             if (sigm < E)
                 return true;
 
-            return true;
+            return false;
         }
 
         
@@ -203,25 +225,7 @@ namespace Lab_2
             var xc = CalculateReflection(cm);
             var fc = CalculateFunction(xc);
 
-            foreach (var item in xc)
-            {
-                Console.WriteLine(item);
-            }
-            Console.WriteLine("F(min) " + fc);
-            Console.WriteLine();
-            foreach (var item in x)
-            {
-
-                foreach (var it in item)
-                {
-                    Console.WriteLine(it);
-                }
-            }
-            foreach (var item in function)
-            {
-                Console.WriteLine("F(old) " + item);
-            }
-            Console.WriteLine();
+           
 
 
 
@@ -242,6 +246,30 @@ namespace Lab_2
                         x[k] = exp;
                     }
 
+
+
+                }
+                else
+                {
+                    if (Fs < fc && fc < function[maxI])
+                    {
+                        var cons = Сonstrict(cm, k);
+                        var consFunc = CalculateFunction(cons);
+                        if (consFunc < function[k])
+                        {
+                            function[k] = consFunc;
+                            x[k] = cons;
+                        }
+                        else
+                        {
+                            Reduction();
+                        }
+
+                    }
+                    else
+                    {
+                        Reduction();
+                    }
                 }
 
 
@@ -259,6 +287,15 @@ namespace Lab_2
                         function[k] = consFunc;
                         x[k] = cons;
                     }
+                    else
+                    {
+                        Reduction();
+                    }
+
+                }
+                else
+                {
+                    Reduction();
                 }
 
                 if (EndStep())
@@ -287,12 +324,54 @@ namespace Lab_2
             for (int i = 0; i < n; i++)
             {
                 result[i] = cm[i] + y * (x[k][i] - cm[i]);
-
+                
             }
             return result;
         }
 
+        private static void Reduction()
+        {
+            int r = function.IndexOf(function.Min());
+
+            List<double[]> newSimplex = new List<double[]>();
+
+            for (int i = 0; i < n + 1; i++)
+            {
+                if (i != r)
+                {
+                    double[] result = new double[n];
+
+                    for (int j = 0; j < n; j++)
+                    {
+                        var a = x[r][j];
+                        var b = x[i][j];
+                        result[j] = x[r][j] + 0.5 * (x[i][j] - x[r][j]);
+                    }
+                    function[i] = CalculateFunction(result);
+                    newSimplex.Add(result);
+
+                }
+                else
+                {
+                    newSimplex.Add(x[r]);
+                }
+                
+
+            }
+
+            for (int i = 0; i < n + 1; i++)
+            {
+
+                x[i] = newSimplex[i];
+
+            }
+
+
+        }
+
+
     }
+
 }
 
 
