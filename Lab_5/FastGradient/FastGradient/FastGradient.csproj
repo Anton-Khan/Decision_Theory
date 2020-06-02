@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{27DBE3F4-020D-423E-8F09-2AE3D957DA6D}</ProjectGuid>
+    <ProjectGuid>{728CC6B1-E641-427F-B9A3-CCB8F3A5D25E}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Gradient</RootNamespace>
-    <AssemblyName>Gradient</AssemblyName>
+    <RootNamespace>FastGradient</RootNamespace>
+    <AssemblyName>FastGradient</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -38,9 +38,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
