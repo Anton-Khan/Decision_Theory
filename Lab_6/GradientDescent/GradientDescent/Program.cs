@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MathNet.Numerics;
-using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.Optimization;
 
-namespace Gradient
+
+namespace GradientDescent
 {
     class Program
     {
@@ -16,6 +12,8 @@ namespace Gradient
         private static double E = 0.1;
         private static List<double[]> x = new List<double[]>();
         private static List<double> f = new List<double>();
+        private static int dir = 0;
+        private static List<double[]> e = new List<double[]>();
 
         static void DrawX()
         {
@@ -23,11 +21,12 @@ namespace Gradient
             List<double[]> temp = new List<double[]>();
             if (x.Count > 5)
             {
-                for (int i = x.Count-5; i < x.Count; i++)
+                for (int i = x.Count - 5; i < x.Count; i++)
                 {
                     temp.Add(x[i]);
                 }
-            }else
+            }
+            else
             {
                 temp = x;
             }
@@ -47,7 +46,7 @@ namespace Gradient
         {
             Console.WriteLine("______Fs_______");
             List<double> temp = new List<double>();
-            if (x.Count > 5)
+            if (f.Count > 5)
             {
                 for (int i = f.Count - 5; i < f.Count; i++)
                 {
@@ -80,10 +79,6 @@ namespace Gradient
             return 2.5 * Math.Pow(x[0], 2) - 3.1 * x[0] * x[1] + Math.Pow(x[1], 2) - 5.1 * x[0];
         }
 
-       
-
-        
-
         private static double[] CalculateGradient(double[] xc)
         {
             double[] result = new double[n];
@@ -92,27 +87,50 @@ namespace Gradient
 
             //result[0] = 6 * xc[0] - xc[1] - 8; result[1] = xc[0] + 6 * xc[1];
             result[0] = 2.5 * 2 * xc[0] - 3.1 * xc[1] - 5.1; result[1] = -3.1 * xc[0] + 2 * xc[1];
-           
-            
+
             return result;
 
         }
 
-        
-
-       
-        private static double[] NextPoint(double[] xc)
+        private static double[] getSecond()
         {
             double[] result = new double[n];
+            //result[0] = 2; result[1] = 6 ;
+            //result[0] = 6; result[1] = 6;
+            result[0] = 2.5 * 2; result[1] = 2;
+
+            return result;
+        }
+
+        private static double[] getMash()
+        {
+            double[] result = new double[n];
+            //result[0] = -2 ; result[1] = -1;
+            //result[0] = -1; result[1] = 1;
+            result[0] = -3.1; result[1] = -3.1;
+
+            return result;
+
+        }
+
+
+        private static double[] NextPoint(double[] xc)
+        {
+            double[] result = xc.Clone() as double[];
             foreach (var item in CalculateGradient(xc))
             {
                 Console.WriteLine("Gr = " + item);
             }
             Console.WriteLine();
+            double sum = 0;
             for (int i = 0; i < n; i++)
             {
-                result[i] = x.Last()[i] - h * CalculateGradient(xc)[i];
+                sum += CalculateGradient(xc)[i] * e[dir][i];
             }
+            
+
+            result[dir] = x.Last()[dir] - h * sum ;
+
             return result;
         }
 
@@ -121,24 +139,31 @@ namespace Gradient
             double sum = 0;
             for (int i = 0; i < n; i++)
             {
-                
-                sum += Math.Pow(CalculateGradient(x.Last())[i], 2);
-                
-            }
 
-            Console.WriteLine(Math.Sqrt(sum) +" < "+ E + " = " + (Math.Sqrt(sum) < E));
-            if (Math.Sqrt(sum) < E)
+                sum += Math.Pow(CalculateGradient(x.Last())[i], 2);
+
+            }
+            foreach (var item in CalculateGradient(x.Last()))
+            {
+                Console.WriteLine("NewGR = " + item);
+            }
+            Console.WriteLine(Math.Sqrt(sum) + " < " + E + " = " + (Math.Sqrt(sum) < E));
+            if (Math.Sqrt(sum) <= E)
                 return true;
 
             return false;
         }
 
-
+       
         static void Main(string[] args)
         {
+            e.Add(new double[] { 1, 0 });
+            e.Add(new double[] { 0, 1 });
 
-            x.Add(new double[] {-1,-1});
+            x.Add(new double[] { -1, -1 });
+
            
+
             f.Add(CalculateFunction(x[0]));
             DrawX();
             DrawF();
@@ -155,48 +180,120 @@ namespace Gradient
                 return;
             }
 
-
-            for (int i = 0; i < 3200; i++)
+            for (int i = 0; i < 210; i++)
             {
-                Console.WriteLine("It = " + i);
+                Console.WriteLine("\n\nIt = " + i);
                 
+                
+                CalcH();
+
                 x.Add(NextPoint(x.Last()));
-                
                 f.Add(CalculateFunction(x.Last()));
+
                 DrawX();
                 DrawF();
+                Console.WriteLine("Direction = " + dir);
 
-                Console.WriteLine(f[f.Count - 2] +" > "+ f.Last() + " = " + (f[f.Count - 2] > f.Last()));
-                if (f[f.Count-2] > f.Last())
+                if (IsEnd())
                 {
-
-                    if (IsEnd())
+                    Console.WriteLine("Iteration " + i);
+                    foreach (var item in x.Last())
                     {
-                        Console.WriteLine("Iteration " + i);
-                        foreach (var item in x.Last())
-                        {
-                            Console.WriteLine("x = " + item);
-                        }
-                        Console.WriteLine("Fmin = " + f.Last());
-                        break;
+                        Console.WriteLine("x = " + item);
                     }
-                    else
-                    {
-                        continue;
-                    }
-                    
+                    Console.WriteLine("Fmin = " + f.Last());
+                    break;
                 }
                 else
                 {
-                    h = h / 2.0;
+                    dir++;
+                    if (dir == n)
+                    {
+                        dir = 0;
+                    }
                     
+
                 }
             }
 
             Console.ReadLine();
-            
+
         }
 
-    
+        private static void CalcH()
+        {
+            double[,] matrix = new double[n, n];
+
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (i != j)
+                    {
+                        
+                        matrix[i, j] = getMash()[i];
+                        
+                    }
+                    else
+                    {
+                        matrix[i, j] = getSecond()[i];
+                    }
+                }
+            }
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Matrix");
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    Console.Write(matrix[i, j] + " ");
+                }
+                Console.WriteLine();
+            }
+
+            double[] temp = new double[n];
+            for (int i = 0; i < n; i++)
+            {
+                temp[i] = 0;
+                for (int j = 0; j < n; j++)
+                {
+                    temp[i] += matrix[j, i] * CalculateGradient(x.Last())[j]; 
+                }
+            }
+
+            double sum = 0;
+            for (int i = 0; i < n; i++)
+            {
+
+                sum += CalculateGradient(x.Last())[i] * CalculateGradient(x.Last())[i];
+
+            }
+
+            double sum2 = 0;
+            for (int i = 0; i < n; i++)
+            {
+
+                sum2 += temp[i] * CalculateGradient(x.Last())[i];
+
+            }
+
+
+            Console.WriteLine();
+            Console.WriteLine("Sum 1 = " + sum);
+            Console.WriteLine("Sum 2 = " + sum2);
+            Console.WriteLine();
+
+
+            h = sum / sum2;
+            Console.WriteLine("H = " + h);
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.White;
+
+
+
+        }
+
     }
 }
+
+

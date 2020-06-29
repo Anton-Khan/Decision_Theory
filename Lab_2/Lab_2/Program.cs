@@ -11,7 +11,7 @@ namespace Lab_2
 
     class Program
     {
-        private static int n = 3;
+        private static int n = 2;
         private static double m = 1;
         private static double b = 2.8;
         private static double y = 0.4;
@@ -37,10 +37,37 @@ namespace Lab_2
 
             //return 2 * Math.Pow(x[0], 4) + Math.Pow(x[1], 4) + Math.Pow(x[0], 2) * x[1] - 5 * x[0] * x[1] + 3 * Math.Pow(x[0], 2) + 8 * x[1];
 
-            return 4 * Math.Pow(x[0], 2) + 4 * Math.Pow(x[1], 2) + Math.Pow(x[2], 2) - 2 * x[0] * x[2] - 5 * x[0] * x[1] - 8 * x[2];
+            //return 4 * Math.Pow(x[0], 2) + 4 * Math.Pow(x[1], 2) + Math.Pow(x[2], 2) - 2 * x[0] * x[2] - 5 * x[0] * x[1] - 8 * x[2];
 
             //return Math.Pow(x[0], 2) - x[0] * x[1] + 3 * Math.Pow(x[1], 2) - x[0];
+            return 2.5 * Math.Pow(x[0], 2) - 3.1 * x[0] * x[1] + Math.Pow(x[1], 2) - 5.1 * x[0];
         }
+
+        static void DrawX()
+        {
+            Console.WriteLine("______Xs_______");
+            foreach (var item in x)
+            {
+                Console.WriteLine();
+                foreach (var i in item)
+                {
+                    Console.WriteLine(i);
+                }
+
+            }
+            Console.WriteLine("_______________");
+        }
+
+        static void DrawF()
+        {
+            Console.WriteLine("______Fs_______");
+            foreach (var item in function)
+            {
+                Console.WriteLine(item);
+            }
+            Console.WriteLine("_______________");
+        }
+
 
         private static void FirstStep()
         {
@@ -49,9 +76,9 @@ namespace Lab_2
                 x.Add(new double[n]);
             }
 
-            x[0][0] = 1;
-            x[0][1] = 1;
-            x[0][2] = 1;
+            x[0][0] = -1;
+            x[0][1] = -1;
+            
 
         }
 
@@ -60,20 +87,29 @@ namespace Lab_2
             FirstStep();
 
             CalculateIncrements();
+            Console.WriteLine("fi = " + firstIncrements);
+            Console.WriteLine("si = " + secondIncrements);
+
             CalculateXs();
+            DrawX();
 
             for (int i = 0; i < n + 1; i++)
             {
                 function.Add(CalculateFunction(x[i]));
             }
+            DrawF();
+            Console.WriteLine("\n");
 
-            
-            
+
 
             int counter = 0;
 
             do
             {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("__________________");
+                Console.WriteLine("it = " + counter);
+
                 minI = function.IndexOf(function.Min());
                 maxI = function.IndexOf(function.Max());
 
@@ -87,18 +123,22 @@ namespace Lab_2
                 }
 
                 Fs = function[function.IndexOf(temp.Max())];
+                Console.WriteLine("MinF = " + function[minI]);
+                Console.WriteLine("MaxF = " + function[maxI]);
+                Console.WriteLine("Fs = " + Fs);
 
 
 
 
-                counter++;
                 if (Iteration())
                 {
+                    Console.WriteLine("it = " + counter);
                     break;
                 }
+                DrawX();
+                DrawF();
 
-
-
+                counter++;
             } while (true);
 
             Console.WriteLine( counter );
@@ -165,16 +205,26 @@ namespace Lab_2
         {
             double sigm;
             double sum = 0;
+            
             for (int i = 0; i < n+1; i++)
             {
                 sum += function[i] - CalculateFunction(CalculateMassCenter(x));
             }
+            foreach (var item in CalculateMassCenter(x))
+            {
+                Console.WriteLine("FullCm = " + item);
+            }
+            Console.WriteLine();
+            Console.WriteLine("FullFunc = " + CalculateFunction(CalculateMassCenter(x)));
 
             sigm = Math.Sqrt((1.0 / (n + 1) * Math.Pow(sum, 2)));
-            Console.WriteLine(sigm);
+            Console.WriteLine(sigm + " < " + E );
             if (sigm < E)
+            {
+                Console.WriteLine("isEnd YES");
                 return true;
-
+            }
+            Console.WriteLine("isEnd NO");
             return false;
         }
 
@@ -211,6 +261,7 @@ namespace Lab_2
             List<double[]> cmData = new List<double[]>();
 
             int k = function.IndexOf(function.Max());
+            Console.WriteLine("take " + k + " func");
 
             for (int i = x.Count - (n + 1); i < n + 1; i++)
             {
@@ -219,13 +270,27 @@ namespace Lab_2
                     cmData.Add(x[i].Clone() as double[]);
                 }
             }
-
+            Console.ForegroundColor = ConsoleColor.Red;
+            foreach (var item in CalculateMassCenter(cmData))
+            {
+                Console.WriteLine("Cm = " + item);
+            }
+            Console.WriteLine();
 
             var cm = CalculateMassCenter(cmData);
             var xc = CalculateReflection(cm);
             var fc = CalculateFunction(xc);
 
-           
+            Console.ForegroundColor = ConsoleColor.Blue;
+            foreach (var item in xc)
+            {
+                Console.WriteLine("Ref = " + item);
+            }
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine("Fc = " + fc);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("__________________");
 
 
 
@@ -235,7 +300,7 @@ namespace Lab_2
                 x[k] = xc;
                 function[k] = fc;
 
-
+                Console.WriteLine(function[k] +  " < " +  function[minI] + " = " + (function[k] < function[minI]));
                 if (function[k] < function[minI])
                 {
                     var exp = Expand(cm, k);
@@ -245,16 +310,18 @@ namespace Lab_2
                         function[k] = expFunc;
                         x[k] = exp;
                     }
-
-
+                    Console.WriteLine("ExpFunc = " + expFunc);
+                    
 
                 }
                 else
                 {
+                    Console.WriteLine(Fs + " < " + fc + " && " +  fc  + " < " + function[maxI] + " = " + (Fs < fc && fc < function[maxI]));
                     if (Fs < fc && fc < function[maxI])
                     {
                         var cons = Сonstrict(cm, k);
                         var consFunc = CalculateFunction(cons);
+                        Console.WriteLine("ConsFunc = " + consFunc);
                         if (consFunc < function[k])
                         {
                             function[k] = consFunc;
@@ -282,6 +349,7 @@ namespace Lab_2
                 {
                     var cons = Сonstrict(cm, k);
                     var consFunc = CalculateFunction(cons);
+                    Console.WriteLine("ConsFunc = " + consFunc);
                     if (consFunc < function[k])
                     {
                         function[k] = consFunc;
@@ -308,11 +376,17 @@ namespace Lab_2
         private static double[] Expand(double[] cm, int k)
         {
             double[] result = new double[n];
-
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Expand");
+            Console.ForegroundColor = ConsoleColor.White;
             for (int i = 0; i < n; i++)
             {
                 result[i] = cm[i] + b * (x[k][i] - cm[i]);
                 
+            }
+            foreach (var item in result)
+            {
+                Console.WriteLine("ExpNew = " + item);
             }
             return result;
         }
@@ -320,11 +394,17 @@ namespace Lab_2
         private static double[] Сonstrict(double[] cm, int k)
         {
             double[] result = new double[n];
-
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Constrict");
+            Console.ForegroundColor = ConsoleColor.White;
             for (int i = 0; i < n; i++)
             {
                 result[i] = cm[i] + y * (x[k][i] - cm[i]);
                 
+            }
+            foreach (var item in result)
+            {
+                Console.WriteLine("ConstrNew = " + item);
             }
             return result;
         }
@@ -365,8 +445,13 @@ namespace Lab_2
                 x[i] = newSimplex[i];
 
             }
-
-
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.WriteLine("____Reduc_____");
+            DrawX();
+            DrawF();
+            Console.WriteLine("____-----_____");
+            Console.ForegroundColor = ConsoleColor.White;
+            
         }
 
 
