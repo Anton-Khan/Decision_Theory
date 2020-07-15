@@ -185,17 +185,15 @@ namespace Newtone
         {
             Matrix<double> a = Matrix<double>.Build.DenseOfArray(matr);
 
-            if (matr[0,0] > 0 && a.Determinant() > 0)
+            var det = a.Determinant();
+            if (matr[0,0] > 0 && det > 0)
             {
                 return true;
             }
             return false;
         }
 
-        private static double Deteminant(double[,] matr)
-        {
-            return matr[1, 1] * matr[2, 2] - matr[1, 2] * matr[2, 1];
-        }
+       
 
         static void Main(string[] args)
         {

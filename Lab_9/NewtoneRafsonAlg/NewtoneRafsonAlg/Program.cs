@@ -13,7 +13,7 @@ namespace NewtoneRafsonAlg
         private static double E = 0.1;
         private static List<double[]> x = new List<double[]>();
         private static List<double> f = new List<double>();
-        private static int dir = 0;
+        private static double[] P;
 
         private static double[,] matrix;
 
@@ -199,6 +199,7 @@ namespace NewtoneRafsonAlg
 
         static void Main(string[] args)
         {
+            P = new double[n];
             
             x.Add(new double[] { -1, -1 });
 
@@ -228,44 +229,8 @@ namespace NewtoneRafsonAlg
                 }
 
                 CreateMatrix();
-                if (IsOptimal(matrix))
-                {
-                    CalcH();
-                }
-                else
-                {
-                    CalcH(new double[,] { { 1, 0 }, { 0, 1 } });
-                }
-                Console.WriteLine("-----------------------------------");
-                Console.ForegroundColor = ConsoleColor.Red;
-                Vector<double> xk = Vector<double>.Build.DenseOfArray(x.Last());
-                Vector<double> gr = Vector<double>.Build.DenseOfArray(CalculateGradient(x.Last()));
-                Matrix<double> m = Matrix<double>.Build.DenseOfArray(matrix);
-                var invMatr = m.Inverse();
-                Console.WriteLine(m);
-                Console.WriteLine("Inverse");
-                Console.WriteLine(invMatr);
-                Console.ForegroundColor = ConsoleColor.White;
-                var P = invMatr.Multiply(gr);
-                Console.WriteLine(invMatr);
-                Console.WriteLine("Multyply\n");
-                Console.WriteLine(gr);
-                Console.WriteLine("Equals\n");
-                Console.WriteLine(P);
-                var res = xk - P.Multiply(h);
-                Console.WriteLine(xk);
-                Console.WriteLine("Minus\n");
-                Console.WriteLine(P);
-                Console.WriteLine("Equals\n");
-                Console.WriteLine(res);
-                Console.WriteLine("-----------------------------------");
-                x.Add(res.ToArray<double>());
-                f.Add(CalculateFunction(x.Last()));
-
-                Console.ForegroundColor = ConsoleColor.Blue;
-                DrawX();
-                DrawF();
-                Console.ForegroundColor = ConsoleColor.White;
+                Exec(IsOptimal(matrix));
+                
 
 
             }
@@ -274,13 +239,14 @@ namespace NewtoneRafsonAlg
 
         private static void CalcH()
         {
+            
             double[] temp = new double[n];
             for (int i = 0; i < n; i++)
             {
                 temp[i] = 0;
                 for (int j = 0; j < n; j++)
                 {
-                    temp[i] += matrix[j, i] * CalculateGradient(x.Last())[j];
+                    temp[i] += matrix[j, i] * P[j];
                 }
             }
 
@@ -288,7 +254,7 @@ namespace NewtoneRafsonAlg
             for (int i = 0; i < n; i++)
             {
 
-                sum += CalculateGradient(x.Last())[i] * CalculateGradient(x.Last())[i];
+                sum += CalculateGradient(x.Last())[i] * P[i];
 
             }
 
@@ -296,7 +262,7 @@ namespace NewtoneRafsonAlg
             for (int i = 0; i < n; i++)
             {
 
-                sum2 += temp[i] * CalculateGradient(x.Last())[i];
+                sum2 += temp[i] * P[i];
 
             }
 
@@ -363,6 +329,83 @@ namespace NewtoneRafsonAlg
             Console.WriteLine("H = " + h);
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        private static void Exec(bool opt)
+        {
+            if (opt)
+            {
+                Console.WriteLine("-----------------------------------");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Vector<double> xk = Vector<double>.Build.DenseOfArray(x.Last());
+                Vector<double> gr = Vector<double>.Build.DenseOfArray(CalculateGradient(x.Last()));
+                Matrix<double> m = Matrix<double>.Build.DenseOfArray(matrix);
+                var invMatr = m.Inverse();
+                Console.WriteLine(m);
+                Console.WriteLine("Inverse");
+                Console.WriteLine(invMatr);
+                Console.ForegroundColor = ConsoleColor.White;
+                var Pv = invMatr.Multiply(gr);
+                P = Pv.ToArray();
+                Console.WriteLine(invMatr);
+                Console.WriteLine("Multyply\n");
+                Console.WriteLine(gr);
+                Console.WriteLine("Equals\n");
+                Console.WriteLine(Pv);
+                CalcH();
+                var res = xk - (Pv.Multiply(h));
+                Console.WriteLine(xk);
+                Console.WriteLine("Minus\n");
+                Console.WriteLine(Pv);
+                Console.WriteLine("Equals\n");
+                Console.WriteLine(res);
+                Console.WriteLine("-----------------------------------");
+                x.Add(res.ToArray<double>());
+                f.Add(CalculateFunction(x.Last()));
+
+                Console.ForegroundColor = ConsoleColor.Blue;
+                DrawX();
+                DrawF();
+                Console.ForegroundColor = ConsoleColor.White;
+
+            }
+            else
+            {
+                Console.WriteLine("-----------------------------------");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Vector<double> xk = Vector<double>.Build.DenseOfArray(x.Last());
+                Vector<double> gr = Vector<double>.Build.DenseOfArray(CalculateGradient(x.Last()));
+                Matrix<double> m = Matrix<double>.Build.DenseOfArray(matrix);
+                var invMatr = m.Inverse();
+                Console.WriteLine(m);
+                Console.WriteLine("Inverse");
+                Console.WriteLine(invMatr);
+                Console.ForegroundColor = ConsoleColor.White;
+                var Pv = invMatr.Multiply(gr);
+                P = Pv.ToArray();
+                Console.WriteLine(invMatr);
+                Console.WriteLine("Multyply\n");
+                Console.WriteLine(gr);
+                Console.WriteLine("Equals\n");
+                Console.WriteLine(Pv);
+                CalcH(new double[,] { { 1, 0 }, { 0, 1 } });
+                var res = xk - (Pv.Multiply(h));
+                Console.WriteLine(xk);
+                Console.WriteLine("Minus\n");
+                Console.WriteLine(Pv);
+                Console.WriteLine("Equals\n");
+                Console.WriteLine(res);
+                Console.WriteLine("-----------------------------------");
+                x.Add(res.ToArray<double>());
+                f.Add(CalculateFunction(x.Last()));
+
+                Console.ForegroundColor = ConsoleColor.Blue;
+                DrawX();
+                DrawF();
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+
+            
         }
 
     }
